@@ -4,7 +4,6 @@ const requestify = require('requestify');
 const tools = require('./tools');
 const data = require('./data');
 const config = require('./config');
-//const config = require('./config-dev');
 
 const bot = new Discord.Client();
 
@@ -124,8 +123,8 @@ var getHelp = cmd => {
 }
 
 // pings servers, gestatus sets serverInfo and players variables
-var pingServer = (message, showInfo, showPlayers) => {
-	var args = getArgs(message);
+var pingServer = (message, showInfo, showPlayers, editMessage) => {
+	var args = !editMessage ? getArgs(message) : editMessage.split(' ');
 	var paramStr = '';
 	
 	if (args && args.length > 1) {	
@@ -168,7 +167,7 @@ var pingServer = (message, showInfo, showPlayers) => {
 			var serverInfo = undefined;
 			
 			//console.log(resp);
-						
+			
 			eval(resp);
 			
 			// console.log(serverInfo);
@@ -179,7 +178,8 @@ var pingServer = (message, showInfo, showPlayers) => {
 			if (serverInfo == undefined || serverInfo.sv_hostname == null) {
 				msg += "Server is not responding or ip adress is wrong";
 			} else {								
-				msg += "`" + serverInfo.sv_hostname.replace(/\^[^\^]/g, "").trim() + "` " + "`(Q3 " + getGameVersion(serverInfo.protocol) + ")`\n";
+				msg += "`" + serverInfo.sv_hostname.replace(/\^[^\^]/g, "").trim() + "` " + "`(Q3 " + getGameVersion(serverInfo.protocol) + ")` " 
+					 + "`" + ip + ":" + port + "`"  + "\n";
 				msg += "`Map: " + serverInfo.mapname + "` `" + serverInfo.sm_ClientsString + "`\n";					
 			
 				if (showPlayers) {											
@@ -188,7 +188,7 @@ var pingServer = (message, showInfo, showPlayers) => {
 					if (players.length == 0) {
 						msg += "Server is empty";
 					} else {						
-						msg += "*Name*".padEnd(30) + " " + "*Ping*".padStart(6) + " " + "*Score*".padStart(7) + "\n";										
+						msg += "*Name*".padEnd(30) + " " + "*Ping*".padStart(6) + " " + "*Score*".padStart(7) + "\n";
 						
 						for(var i = 0; i < players.length; i++) {
 							msg += players[i].SimpleName.replace(/[\u0000-\u001F]+/gi, '[]').padEnd(30) + " ";
@@ -207,9 +207,20 @@ var pingServer = (message, showInfo, showPlayers) => {
 					
 					msg += "```";
 				}
-			}					
+			}
 			
-			message.channel.send(msg);
+			if (editMessage) {
+				message.edit(msg);
+			} else {
+				if (showPlayers)
+					message.channel.send(msg).then(async function (message) {					
+						await message.react("🔄");					
+					}).catch(function() {
+						console.log("Something wrong");
+					});
+				else 
+					message.channel.send(msg);
+			}
 		}
 	);
 }
@@ -288,6 +299,27 @@ var pushQ3commands = () => {
 	}
 }
 
+pushQ3commands();
+
+bot.on('messageReactionAdd', (reaction, user) => {	
+	if(reaction.emoji.name === "🔄") {									
+		if (!user.bot) {
+			var matches = reaction.message.content.match(/`(.*?)`/gi);
+			if (matches && matches.length >= 3) {
+				var ip = matches[2].replace(/`/g, "");					
+				
+				reaction.remove(user).then(reaction =>  {
+					console.log("Refresh clicked " + user.username);
+				}, error =>  {
+					console.log('Unexpected error: ' + error);
+				});
+				
+				pingServer(reaction.message, false, true, "\ping " + ip);			
+			}			
+		}
+	}		
+});
+
 bot.on('message', message => {	
 	//console.log(message.content);
 	
@@ -308,17 +340,23 @@ bot.on('message', message => {
 bot.on("guildMemberAdd", member => {
 	console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
 
-	var welcomeChannel = member.guild.channels.find("name", "sodmoders");  
+	var channel = member.guild.channels.find("id", config.MAIN_CHANNEL_ID);  
 
-	if (welcomeChannel) {	  
-		var infoChannel = member.guild.channels.find("name", "info");
+	if (channel) {	  
+		var infochannel = member.guild.channels.find("id", config.INFO_CHANNEL_ID);
 
-		var emoji1 = bot.emojis.find("name", "twitchheyguys");    
-		var emoji2 = bot.emojis.find("name", "ugandangeweh");
-		var emoji3 = bot.emojis.find("name", "vkthumb");  
+		var emoji1 = bot.emojis.find("name", "twitchheyguys");
+		//var emoji2 = bot.emojis.find("name", "ugandangeweh");
+		var emoji3 = bot.emojis.find("name", "pepe");
 
-		var msg = `Welcome to ${member.guild.name} discord server, ${member.user}! ${emoji1 || ""} Please check ${infoChannel} channel for quick info and help, have fun ${emoji2 || ""}${emoji3 || ""}`;
-		welcomeChannel.send(msg);
+		var msg = `Welcome to ${member.guild.name} discord server, ${member.user}! ${emoji1 || ""} Please check ${infochannel} channel for quick info and help, have fun ${emoji3 || ""}`;
+		channel.send(msg);
+	}
+	
+	var role = member.guild.roles.find("name", "Quakers");
+	
+	if (role) {
+		member.addRole(role).catch(console.error);
 	}
 });
 
@@ -333,7 +371,5 @@ if (config.token === '')
 	throw new Error('Token is not defined');	
 
 bot.login(config.token);
-
-pushQ3commands();
 
 console.log('Connecting...');

@@ -2,5 +2,7 @@
 	"token" 	: "",
 	"activity"	: "Quake 3",
 	"username"	: "GRACZ",
-	"prefix" 	: "\\"
+	"prefix" 	: "\\",
+	"MAIN_CHANNEL_ID" : "",
+	"INFO_CHANNEL_ID" : ""
 }
