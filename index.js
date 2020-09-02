@@ -230,7 +230,7 @@ var cmds = [
 	[ 'help', message => { 
 		var args = getArgs(message);
 	
-		var msg = ""
+		var msg = "";
 				
 		if (args && args.length > 1) {
 			var cmd = args[1].trim().toLowerCase();
@@ -248,38 +248,45 @@ var cmds = [
 	}, 'display quick help\n' ],		
 	
 	[ 'ping', message => pingServer(message, false, true), 
-	'pings any known server or any ip:port\n', 
-	"`\\ping sm` - pings sodmod ctf `\\ping 139.5.28.161:27961` - pings specified ip:port\n`\\servers` - display known servers"],		
+		'pings any known server or any ip:port\n', 
+		"`\\ping sm` - pings sodmod ctf `\\ping 139.5.28.161:27961` - pings specified ip:port\n`\\servers` - display known servers"],
 	
 	[ 'info', message => pingServer(message, true, false), 
-	'gets serverinfo of any known server or any ip:port\n', 
-	"`\\info sm` - serverinfo of sodmod ctf `\\info 139.5.28.161:27961` - serverinfo of specified ip:port\n`\\servers` - display known servers"],
+		'gets serverinfo of any known server or any ip:port\n', 
+		"`\\info sm` - serverinfo of sodmod ctf `\\info 139.5.28.161:27961` - serverinfo of specified ip:port\n`\\servers` - display known servers"],
 	
-	[ 'servers', message => message.channel.send("Known servers:\n" + getKnownServers()), 'display known servers\n\n'],
+	[ 'servers', 	message => message.channel.send("Known servers:\n" + getKnownServers()), ''],
 	
-	[ 'md',			message => shot(message, '%a drawing %r with machinegun on wall for %t',	'%a drawing %r with machinegun on wall'),	],		
-	[ 'mgdraw',		message => shot(message, '%a drawing %r with machinegun on wall for %t',	'%a drawing %r with machinegun on wall'),	
-		'use machinegun to draw random stuff on wall\n',
-		'`\\md` - draw random `\\md @Name` - draw random for someone `\\md @Name (sacred relic)` - draw custom for someone'],		
+	[ 'md',			message => shot(message, '%a drawing %r with machinegun on wall for %t',	'%a drawing %r with machinegun on wall'),	],
+	[ 'mgdraw',		message => shot(message, '%a drawing %r with machinegun on wall for %t',	'%a drawing %r with machinegun on wall'),
+		'',
+		'`\\md` - draw random `\\md @Name` - draw random for someone `\\md @Name (sacred relic)` - draw custom for someone'],
 		
 	[ 'rd',			message => shot(message, '%a drawing %r with railgun on wall for %t', 		'%a drawing %r with railgun on wall'),		],
-	[ 'raildraw',	message => shot(message, '%a drawing %r with railgun on wall for %t', 		'%a drawing %r with railgun on wall'),		
-		'use railgun to draw random stuff on wall\n\n',
-		'`\\md` - draw random `\\md @Name` - draw random for someone `\\md @Name (colorful rainbow)` - draw custom for someone'],				
+	[ 'raildraw',	message => shot(message, '%a drawing %r with railgun on wall for %t', 		'%a drawing %r with railgun on wall'),
+		'',
+		'`\\md` - draw random `\\md @Name` - draw random for someone `\\md @Name (colorful rainbow)` - draw custom for someone'],
 	
-	[ 'pummel', 	message => shot(message, '%t was pummeled by %a', 				'%a seeking blood'),	 					' ' ],		
-	[ 'mg', 		message => shot(message, '%t was machinegunned by %a', 			'%a drawing %r with machinegun on wall'),	' ', "it's machinegun" ],		
-	[ 'shotgun', 	message => shot(message, "%t was gunned down by %a", 			'%a shooting in air with shotgun'),			' ' ],
-	[ 'grenade', 	message => shot(message, "%t was shredded by %a's shrapnel", 	'%a tripped on its own grenade'), 			' ' ],
-	[ 'rocket', 	message => shot(message, "%t ate %a's rocket", 					'%a blew itself up'),						' ' ],	
-	[ 'lg', 		message => shot(message, "%t was electrocuted by %a", 			"%a electrolucing it's butt"), 				' ', "it's lightning gun (shaft)" ],
-	[ 'shaft', 		message => shot(message, "%t was electrocuted by %a", 			"%a electrolucing it's butt"),					],
-	[ 'rail', 		message => shot(message, '%t was railed by %a', 				"%a drawing %r with rail on wall"),			' ' ],
-	[ 'plasma', 	message => shot(message, "%t was melted by %a's plasmagun", 	'%a melted itself'), 						' ' ],
-	[ 'bfg', 		message => shot(message, "%t was blasted by %a's BFG", 			'%a should have used a smaller gun'), 		
-		'use any weapon to attack \n\nExamples: `\\rail @Name` `\\lg` `\\rocket @Name (with quad)` `\\bfg @Name (r)`, write in `( )` any custom ending, r - for random generated' ],
+	[ 'pummel', 	message => shot(message, '%t was pummeled by %a', 				'%a seeking blood'),	 					'' ],
+	[ 'mg', 		message => shot(message, '%t was machinegunned by %a', 			'%a drawing %r with machinegun on wall'),	'', "it's machinegun" ],
+	[ 'shotgun', 	message => shot(message, "%t was gunned down by %a", 			'%a shooting in air with shotgun'),			'' ],
+	[ 'grenade', 	message => shot(message, "%t was shredded by %a's shrapnel", 	'%a tripped on its own grenade'), 			'' ],
+	[ 'rocket', 	message => shot(message, "%t ate %a's rocket", 					'%a blew itself up'),						'' ],	
+	[ 'lg', 		message => shot(message, "%t was electrocuted by %a", 			"%a electrolucing it's butt"), 				'', "it's lightning gun (shaft)" ],
+	[ 'shaft', 		message => shot(message, "%t was electrocuted by %a", 			"%a electrolucing it's butt"),				   ],
+	[ 'rail', 		message => shot(message, '%t was railed by %a', 				"%a drawing %r with rail on wall"),			'' ],
+	[ 'plasma', 	message => shot(message, "%t was melted by %a's plasmagun", 	'%a melted itself'), 						'' ],
+	[ 'bfg', 		message => shot(message, "%t was blasted by %a's BFG", 			'%a should have used a smaller gun'), 		'' ],
+	
+	[ 'stuff', 		message => message.channel.send(
+		'**\\servers** - display known servers\n' +
+		'**\\mgdraw** - use machinegun to draw random stuff on wall\n' +
+		'**\\raildraw** - use railgun to draw random stuff on wall\n' +
+		'**\\pummel \\mg \\shotgun \\grenade \\rocket \\lg \\rail \\plasma \\bfg** - use any weapon to attack \n' +
+		'Examples: `\\rail @Name` `\\lg` `\\rocket @Name (with quad)` `\\bfg @Name (r)`\n' +
+		'write in `( )` any custom ending, r - for random generated'), 'other commands' ],
 		
-	[ 'name',			message => message.channel.send(getRandomWords()),			, 'generate random name' ]
+	[ 'name',		message => message.channel.send(getRandomWords()),				, 'generate random name' ]
 ]
 
 //push short info for some quake 3 commands
@@ -345,15 +352,14 @@ bot.on("guildMemberAdd", member => {
 	if (channel) {	  
 		var infochannel = member.guild.channels.find("id", config.INFO_CHANNEL_ID);
 
-		var emoji1 = bot.emojis.find("name", "twitchheyguys");
-		//var emoji2 = bot.emojis.find("name", "ugandangeweh");
-		var emoji3 = bot.emojis.find("name", "pepe");
+		var emoji1 = bot.emojis.find("name", "q3excellent");
+		var emoji2 = bot.emojis.find("name", "q3wbfg");
 
-		var msg = `Welcome to ${member.guild.name} discord server, ${member.user}! ${emoji1 || ""} Please check ${infochannel} channel for quick info and help, have fun ${emoji3 || ""}`;
+		var msg = `Welcome, ${member.user}! ${emoji1 || ""} Check ${infochannel} for quick help, have fun ${emoji2 || ""}`;
 		channel.send(msg);
 	}
 	
-	var role = member.guild.roles.find("name", "Quakers");
+	var role = member.guild.roles.find("name", "🎮Quakers");
 	
 	if (role) {
 		member.addRole(role).catch(console.error);

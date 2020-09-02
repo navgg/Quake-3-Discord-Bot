@@ -193,14 +193,14 @@
 	],
 	
 	"knownservers": [
-		["sm", "sodmod.ga:27962", "sod mod ctf"],
-		["1v1", "sodmod.ga:27963", "sod mod 1v1"],
+		["sm", "sodmod.ml:27962", "sod mod ctf"],
+		["1v1", "sodmod.ml:27963", "sod mod 1v1"],
+		["ffa", "sodmod.ml:27961", "sod mod ffa"],
 		["aim", "163.172.218.87:27965", "i can't aim"],	
 		["gpe", "91.146.65.115:27961", "gauntlet party est"],
 		["freezer", "87.117.203.203:27960", "massacre freezer"],	
 		["tricks", "163.172.218.87:27960", "para tricks"],	
-		["ffa","195.122.135.13:27960", "free-for-all"],
-		["idiots", "173.199.107.88:27960", "idiots with rail"],
+		["ffa2","195.122.135.13:27960", "free-for-all"],
 		["awffa", "163.172.218.87:27961", "all weapons ffa"],	
 		["aw1v1", "163.172.218.87:27951", "all weapons 1v1"],
 		["aw1v2", "163.172.218.87:27953", "all weapons 1v1 #2"]	
