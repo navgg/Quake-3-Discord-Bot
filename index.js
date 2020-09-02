@@ -1,11 +1,13 @@
 const Discord = require('discord.js');
 const requestify = require('requestify');
+const fs = require('fs');
 
 const tools = require('./tools');
 const data = require('./data');
 const config = require('./config');
 
 const bot = new Discord.Client();
+const APIurl = `http://${config.baseaddr}/API/`;
 
 const ID_CMD = 0;
 const ID_FUNC = 1;
@@ -122,6 +124,103 @@ var getHelp = cmd => {
 	return `I don't know command \\${cmd}`;
 }
 
+//validate map name
+var isMapNameValid = map => {
+	return new Promise((resolve, reject) => {
+		if (map.match(/^q3dm\d/g) || map.match(/^q3tourney\d/g) || map.match(/^q3ctf\d/g) || 
+			map == 'aim4bfg' || map == 'test_bigbox' || map == '13box') {
+			resolve(1);
+			return;
+		}
+
+		requestify.head(`http://ws.q3df.org/maps/download/${map}`)
+			.then(response => {
+				//get pk3 name and check if it's exists
+				var pk3 = /"(.+)"$/g.exec(response.headers["content-disposition"])[1];
+				try {
+					console.log(pk3);
+					resolve(fs.existsSync(config.baseq3path + pk3) ? 1 : 2);
+				} catch(err) {
+					console.error(err);
+					reject(-1);
+				}
+			}).fail(response => {
+				if (response.getCode() == 302)
+					resolve(0);
+				else
+					reject(-1);
+			});
+	});
+}
+
+var switchMapTime = 0;
+var switchMapInterval = 5000;
+// map switch command
+var switchMap = message => {
+	//delete message if its in public channel
+	if (message.guild !== null)
+		message.delete(1000);
+	
+	if (switchMapTime + switchMapInterval > Date.now()) {
+		var w = ((switchMapInterval - (Date.now() - switchMapTime))/1000).toFixed();
+		message.author.send(`Interval between map calls is ${switchMapInterval/1000}sec. Wait ${w}sec`);
+		return;
+	}
+	
+	var caller = message.author.username + '#' + message.author.discriminator;
+	var args = getArgs(message);
+
+	if (args && args.length > 1) {
+		var map = args[1].trim().toLowerCase();
+		var port = 27962;
+		var serv = 'ctf';
+		
+		if (args.length > 2) {
+			var serv = args[2].trim().toLowerCase();
+			switch(serv) {
+				case 'ffa': port = 27961; break;
+				case 'ctf': port = 27962; break;
+				case '1v1': port = 27963; break;
+				default: 
+					message.author.send(`unknown server ${serv}, known servers: ctf, ffa, 1v1`);
+					return;
+			}
+		}
+		
+		if (map == 'q3dm0' && serv == 'ctf') {
+			message.author.send("q3dm0 doesn't work on ctf server");
+			return;
+		}
+		
+		switchMapTime = Date.now();
+
+		var msg = `called map \`${map}\` on **${serv}** server.`;
+		var con = `\\connect ${config.baseaddr}:${port}`;
+		var help = '`\\help map\` - for mo info';
+			
+		isMapNameValid(map).then(res => {
+			if (res == 1) {
+				requestify.get(APIurl + `nextmap?map=${map}&caller=${encodeURIComponent(caller)}&port=${port}`)
+					.then(response => {
+						console.log(`${caller} ${map} ${serv}`);
+						message.author.send(`You've ${msg} ${con} ${help}`);
+					}).fail(response => {
+						message.author.send('Map switch failed');
+					});
+			} else if (res == 2) {
+				message.author.send(`Server has no map \`${map}\`. Contact admin to download it.`);
+			} else {
+				message.author.send(`\`${map}\` name is wrong or I don't know such map`);
+			}
+		}, err => {
+			console.log('isMapNameValid ' + err);
+			message.author.send('Something wrong happened. Contact admin to fix this error.');
+		});
+	} else {
+		message.author.send(getHelp('map'));
+	}
+};
+
 // pings servers, gestatus sets serverInfo and players variables
 var pingServer = (message, showInfo, showPlayers, editMessage) => {
 	var args = !editMessage ? getArgs(message) : editMessage.split(' ');
@@ -160,7 +259,7 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 		return;
 	}
 
-	requestify.get('http://sodmod.ga/API/getstatus' + paramStr)
+	requestify.get(APIurl + 'getstatus' + paramStr)
 		.then(response => {	
 			var resp = response.getBody();
 			var players = undefined;
@@ -256,6 +355,11 @@ var cmds = [
 		"`\\info sm` - serverinfo of sodmod ctf `\\info 139.5.28.161:27961` - serverinfo of specified ip:port\n`\\servers` - display known servers"],
 	
 	[ 'servers', 	message => message.channel.send("Known servers:\n" + getKnownServers()), ''],
+	
+	[ 'map', 		message => switchMap(message), 'switch map on the specified server\n', 
+		'`\\map q3wcp16` - set map on ctf server\n' +
+		'`\\map q3tourney6 ffa` - set map on ffa server\n' +
+		'Known servers: ctf, ffa, 1v1'],
 	
 	[ 'md',			message => shot(message, '%a drawing %r with machinegun on wall for %t',	'%a drawing %r with machinegun on wall'),	],
 	[ 'mgdraw',		message => shot(message, '%a drawing %r with machinegun on wall for %t',	'%a drawing %r with machinegun on wall'),
