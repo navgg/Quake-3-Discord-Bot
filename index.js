@@ -202,7 +202,6 @@ var switchMap = message => {
 			if (res == 1) {
 				requestify.get(APIurl + `nextmap?map=${map}&caller=${encodeURIComponent(caller)}&port=${port}`)
 					.then(response => {
-						console.log(`${caller} ${map} ${serv}`);
 						message.author.send(`You've ${msg} ${con} ${help}`);
 					}).fail(response => {
 						message.author.send('Map switch failed');
@@ -438,7 +437,8 @@ bot.on('message', message => {
 		var args = message.content.substring(1).split(' ');
 		var cmd = args[0];
 		
-		console.log(message.author + " " + message.content);
+		var a = message.author.username + '#' + message.author.discriminator;
+		console.log(`${new Date().toLocaleString()} ${a} ${message.content}`);
 	   
 		//args = args.splice(1);
 		
