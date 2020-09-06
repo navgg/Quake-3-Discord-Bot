@@ -127,8 +127,10 @@ var getHelp = cmd => {
 //validate map name
 var isMapNameValid = map => {
 	return new Promise((resolve, reject) => {
-		if (map.match(/^q3dm\d/g) || map.match(/^q3tourney\d/g) || map.match(/^q3ctf\d/g) || 
-			map == 'aim4bfg' || map == 'test_bigbox' || map == '13box') {
+		if (map.match(/^q3dm[0-1]?\d$/g) || 
+			map.match(/^q3tourney[1-6]$/g) || 
+			map.match(/^q3ctf[1-4]$/g) || 
+			map.match(/^(test_bigbox|q3tourney6_ctf|aim4bfg|13box)$/g)) {
 			resolve(1);
 			return;
 		}
@@ -200,7 +202,7 @@ var switchMap = message => {
 			
 		isMapNameValid(map).then(res => {
 			if (res == 1) {
-				requestify.get(APIurl + `nextmap?map=${map}&caller=${encodeURIComponent(caller)}&port=${port}`)
+				requestify.get(APIurl + `nextmap?map=${encodeURIComponent(map)}&caller=${encodeURIComponent(caller)}&port=${port}`)
 					.then(response => {
 						message.author.send(`You've ${msg} ${con} ${help}`);
 					}).fail(response => {
