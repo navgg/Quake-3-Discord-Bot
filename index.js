@@ -479,6 +479,17 @@ bot.on('ready', evt => {
 	//console.log(`Ready to serve on ${bot.guilds.size} servers, for ${bot.users.size} users.`);
 });
 
+bot.on('error', error => {
+	if (error) {
+		console.log(error);
+	}
+	// if (error && error.message === 'uWs client connection error') {
+		// console.log('Reconnecting....');
+		// this.reconnect();
+		// return;
+	// }
+});
+
 if (config.token === '')
 	throw new Error('Token is not defined');	
 
