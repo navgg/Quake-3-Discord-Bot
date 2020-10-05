@@ -1,6 +1,6 @@
 {
   "name": "Quake-3-Bot",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "NaViGaToR (322)",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.3.0",
+    "discord.js": "^11.6.4",
     "requestify": "^0.2.5"
   }
 }
