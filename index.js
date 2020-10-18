@@ -213,7 +213,14 @@ var switchMap = message => {
 			if (res == 1) {
 				requestify.get(APIurl + `nextmap?map=${encodeURIComponent(map)}&caller=${encodeURIComponent(caller)}&port=${port}`)
 					.then(response => {
-						message.author.send(`You've ${msg} ${con} ${help}`);
+						var r = JSON.parse(response.body);
+						if (r.success) {
+							bot.log(`Map call success.`);
+							message.author.send(`You've ${msg} ${con} ${help}`);
+						} else {
+							bot.log(r.msg);
+							message.author.send(r.msg);
+						}
 					}).fail(response => {
 						bot.log(response);
 						message.author.send('Map switch failed. Call admin.');
@@ -452,7 +459,7 @@ bot.on('message', message => {
 		var cmd = args[0];
 		
 		var a = message.author.username + '#' + message.author.discriminator;
-		bot.log(`${new Date().toLocaleString()} ${a} ${message.content}`);
+		bot.log(`${a} ${message.content}`);
 	   
 		//args = args.splice(1);
 		
