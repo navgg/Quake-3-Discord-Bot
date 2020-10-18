@@ -3,6 +3,7 @@
 	"activity"	: "Quake III",
 	"username"	: "GRACZ",
 	"prefix" 	: "\\",
+	"protocol"	: "https",
 	"baseaddr"	: "sodmod.ml",
 	"baseq3path": "C:/Games/Quake 3 Arena 1.16n/baseq3/",
 	"MAIN_CHANNEL_ID" : "",

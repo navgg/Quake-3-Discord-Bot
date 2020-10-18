@@ -7,7 +7,7 @@ const data = require('./data');
 const config = require('./config');
 
 const bot = new Discord.Client();
-const APIurl = `http://${config.baseaddr}/API/`;
+const APIurl = `${config.protocol}://${config.baseaddr}/API/`;
 
 const ID_CMD = 0;
 const ID_FUNC = 1;
