@@ -206,7 +206,8 @@ var switchMap = message => {
 					.then(response => {
 						message.author.send(`You've ${msg} ${con} ${help}`);
 					}).fail(response => {
-						message.author.send('Map switch failed');
+						console.log(response);
+						message.author.send('Map switch failed. Call admin.');
 					});
 			} else if (res == 2) {
 				message.author.send(`Server has no map \`${map}\`. Contact admin to download it.`);
@@ -321,8 +322,10 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 				else 
 					message.channel.send(msg);
 			}
-		}
-	);
+		}).fail(response => {
+			console.log(response);
+			message.channel.send('Request failed. Call admin.');
+		});
 }
 
 //all commands: command name, function, quick info, help description
