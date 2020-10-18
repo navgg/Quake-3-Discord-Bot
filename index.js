@@ -19,13 +19,16 @@ tools.init();
 
 var knownservers = data.knownservers;
 
+//log date + message
+bot.log = e => { process.stdout.write(`${new Date().toLocaleString()} `); console.log(e); }
+
 var getArgs = message => message.content.split(' ');
 
 var getRandomWords = () => {
 	var w1 = data.rwords1[Math.floor(Math.random() * data.rwords1.length)]; 
 	var w2 = data.rwords2[Math.floor(Math.random() * data.rwords2.length)]; 
 	
-	//console.log(w1 + " " + w2);
+	//bot.log(w1 + " " + w2);
 	
 	return w1 + " " + w2;
 }
@@ -50,7 +53,7 @@ var shot = (message, msg1, msg2) => {
 		}
 	});		
 	
-	//console.log("mentions: " + ments + ".");
+	//bot.log("mentions: " + ments + ".");
 	
 	//var matches = message.content.match(/\(([^)]+)\)/);
 	var firstI = message.content.indexOf('(') + 1;
@@ -59,7 +62,7 @@ var shot = (message, msg1, msg2) => {
 	
 	var custom = firstI > 0 && lastI > 0 ? message.content.substring(firstI, lastI) : undefined;
 	
-	//console.log(custom);
+	//bot.log(custom);
 	
 	if (ments.length > 0) {			
 		msg += msg1
@@ -140,7 +143,7 @@ var isMapNameValid = map => {
 				//get pk3 name and check if it's exists
 				var pk3 = /"(.+)"$/g.exec(response.headers["content-disposition"])[1];
 				try {
-					console.log(pk3);
+					bot.log(pk3);
 					resolve(fs.existsSync(config.baseq3path + pk3) ? 1 : 2);
 				} catch(err) {
 					console.error(err);
@@ -206,7 +209,7 @@ var switchMap = message => {
 					.then(response => {
 						message.author.send(`You've ${msg} ${con} ${help}`);
 					}).fail(response => {
-						console.log(response);
+						bot.log(response);
 						message.author.send('Map switch failed. Call admin.');
 					});
 			} else if (res == 2) {
@@ -215,7 +218,7 @@ var switchMap = message => {
 				message.author.send(`\`${map}\` name is wrong or I don't know such map`);
 			}
 		}, err => {
-			console.log('isMapNameValid ' + err);
+			bot.log('isMapNameValid ' + err);
 			message.author.send('Something wrong happened. Contact admin to fix this error.');
 		});
 	} else {
@@ -255,7 +258,7 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 		
 		paramStr = "?ip=" + ip + "&port=" + port;
 		
-		//console.log(tmp + ' -> ' + paramStr);
+		//bot.log(tmp + ' -> ' + paramStr);
 	} else {			
 		message.channel.send(getHelp('ping'));
 		return;
@@ -267,12 +270,12 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 			var players = undefined;
 			var serverInfo = undefined;
 			
-			//console.log(resp);
+			//bot.log(resp);
 			
 			eval(resp);
 			
-			// console.log(serverInfo);
-			// console.log(players);				
+			// bot.log(serverInfo);
+			// bot.log(players);				
 			
 			var msg = "";
 			
@@ -317,13 +320,13 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 					message.channel.send(msg).then(async function (message) {					
 						await message.react("🔄");					
 					}).catch(function() {
-						console.log("Something wrong");
+						bot.log("Something wrong");
 					});
 				else 
 					message.channel.send(msg);
 			}
 		}).fail(response => {
-			console.log(response);
+			bot.log(response);
 			message.channel.send('Request failed. Call admin.');
 		});
 }
@@ -424,9 +427,9 @@ bot.on('messageReactionAdd', (reaction, user) => {
 				var ip = matches[2].replace(/`/g, "");					
 				
 				reaction.remove(user).then(reaction =>  {
-					console.log("Refresh clicked " + user.username);
+					bot.log("Refresh clicked " + user.username);
 				}, error =>  {
-					console.log('Unexpected error: ' + error);
+					bot.log('Unexpected error: ' + error);
 				});
 				
 				pingServer(reaction.message, false, true, "\ping " + ip);			
@@ -436,14 +439,14 @@ bot.on('messageReactionAdd', (reaction, user) => {
 });
 
 bot.on('message', message => {	
-	//console.log(message.content);
+	//bot.log(message.content);
 	
 	if (message.content.substring(0, 1) == config.prefix) {						
 		var args = message.content.substring(1).split(' ');
 		var cmd = args[0];
 		
 		var a = message.author.username + '#' + message.author.discriminator;
-		console.log(`${new Date().toLocaleString()} ${a} ${message.content}`);
+		bot.log(`${new Date().toLocaleString()} ${a} ${message.content}`);
 	   
 		//args = args.splice(1);
 		
@@ -454,7 +457,7 @@ bot.on('message', message => {
 });
 
 bot.on("guildMemberAdd", member => {
-	console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
+	bot.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
 
 	var channel = member.guild.channels.find("id", config.MAIN_CHANNEL_ID);  
 
@@ -478,16 +481,16 @@ bot.on("guildMemberAdd", member => {
 bot.on('ready', evt => {	
 	//bot.user.setUsername(confin.username);
 	bot.user.setActivity(config.activity);
-    console.log('Connected as: ' + bot.user.tag);    
-	//console.log(`Ready to serve on ${bot.guilds.size} servers, for ${bot.users.size} users.`);
+    bot.log('Connected as: ' + bot.user.tag);    
+	//bot.log(`Ready to serve on ${bot.guilds.size} servers, for ${bot.users.size} users.`);
 });
 
 bot.on('error', error => {
 	if (error) {
-		console.log(error);
+		bot.log(error);
 	}
 	// if (error && error.message === 'uWs client connection error') {
-		// console.log('Reconnecting....');
+		// bot.log('Reconnecting....');
 		// this.reconnect();
 		// return;
 	// }
@@ -498,4 +501,4 @@ if (config.token === '')
 
 bot.login(config.token);
 
-console.log('Connecting...');
+bot.log('Connecting...');
