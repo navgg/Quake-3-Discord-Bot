@@ -128,8 +128,14 @@ var getHelp = cmd => {
 }
 
 //validate map name
+//resolve: 0 - wrong name, 1 - ok, 2 - server has no map, reject = unexpected error
 var isMapNameValid = map => {
 	return new Promise((resolve, reject) => {
+		if (map.match(/[\"\r\n;:<>/\\|?*]/g)) {
+			resolve(0);
+			return;
+		}
+		
 		if (map.match(/^q3dm[0-1]?\d$/g) || 
 			map.match(/^q3tourney[1-6]$/g) || 
 			map.match(/^q3ctf[1-4]$/g) || 
