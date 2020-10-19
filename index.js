@@ -492,7 +492,7 @@ bot.on("guildMemberAdd", member => {
 });
 
 bot.on('ready', evt => {	
-	//bot.user.setUsername(confin.username);
+	bot.user.setUsername(config.username);
 	bot.user.setActivity(config.activity);
     bot.log('Connected as: ' + bot.user.tag);    
 	//bot.log(`Ready to serve on ${bot.guilds.size} servers, for ${bot.users.size} users.`);
