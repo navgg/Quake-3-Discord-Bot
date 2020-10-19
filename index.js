@@ -28,8 +28,6 @@ var getRandomWords = () => {
 	var w1 = data.rwords1[Math.floor(Math.random() * data.rwords1.length)]; 
 	var w2 = data.rwords2[Math.floor(Math.random() * data.rwords2.length)]; 
 	
-	//bot.log(w1 + " " + w2);
-	
 	return w1 + " " + w2;
 }
 
@@ -37,9 +35,16 @@ var getCustomEnding = () => data.customendings[Math.floor(Math.random() * data.c
 
 // shot someone msg1 - if someone was mentioned, msg2 - if nobody was mentioned
 var shot = (message, msg1, msg2) => {
-	var args = message.content.split(' ');
 	var msg = "";
-	var author = message.author;		
+	var author = message.author;
+	
+	if (message.mentions.users.find(x => x.id == author.id)) {
+		var suicideStr = ["died.", "suicides", "saw the light"];
+		var str = suicideStr[Math.floor(Math.random() * suicideStr.length)];
+		
+		message.channel.send(`${author} ${str}`);
+		return;
+	}
 	
 	var ments = "";
 	var firstMent = true;
@@ -53,16 +58,10 @@ var shot = (message, msg1, msg2) => {
 		}
 	});		
 	
-	//bot.log("mentions: " + ments + ".");
-	
-	//var matches = message.content.match(/\(([^)]+)\)/);
 	var firstI = message.content.indexOf('(') + 1;
-	var lastI = message.content.lastIndexOf(')');
-	//var custom = matches && matches.length > 0 ? matches[1] : undefined;		
+	var lastI = message.content.lastIndexOf(')');	
 	
 	var custom = firstI > 0 && lastI > 0 ? message.content.substring(firstI, lastI) : undefined;
-	
-	//bot.log(custom);
 	
 	if (ments.length > 0) {			
 		msg += msg1
