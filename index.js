@@ -22,6 +22,14 @@ var knownservers = data.knownservers;
 //log date + message
 bot.log = e => { process.stdout.write(`${new Date().toLocaleString()} `); console.log(e); }
 
+//remove message from public channel and respond in private
+bot.privateResponse = (message, txt) => {
+	if (message.guild !== null) {
+		message.author.send(`> ${message.content}`);
+		message.delete(1000);
+	}
+	message.author.send(txt);
+};
 var getArgs = message => message.content.split(' ');
 
 var getRandomWords = () => {
@@ -168,8 +176,10 @@ var switchMapInterval = 5000;
 // map switch command
 var switchMap = message => {
 	//delete message if its in public channel
-	if (message.guild !== null)
+	if (message.guild !== null) {
+		message.author.send(`> ${message.content}`);
 		message.delete(1000);
+	}
 	
 	if (switchMapTime + switchMapInterval > Date.now()) {
 		var w = ((switchMapInterval - (Date.now() - switchMapTime))/1000).toFixed();
@@ -256,7 +266,7 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 			ip = splits[0];
 			port = parseInt(splits[1]);
 			if (!port || port <= 0 || port > 65535 || port == NaN) {
-				message.channel.send('Invalid port ' + splits[1] + ', must be between 1 and 65535');
+				bot.privateResponse(message, 'Invalid port ' + splits[1] + ', must be between 1 and 65535');
 				return;
 			}			
 		} else {
@@ -264,15 +274,13 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 		}
 		
 		if (ip.length <= 5) {
-			message.channel.send('Invalid ip ' + ip);
+			bot.privateResponse(message, 'Invalid ip ' + ip);
 			return;
 		}
 		
 		paramStr = "?ip=" + ip + "&port=" + port;
-		
-		//bot.log(tmp + ' -> ' + paramStr);
-	} else {			
-		message.channel.send(getHelp('ping'));
+	} else {
+		bot.privateResponse(message, getHelp('ping'));
 		return;
 	}
 
@@ -362,7 +370,7 @@ var cmds = [
 	
 		msg += "";
 	
-		message.channel.send(msg);
+		bot.privateResponse(message, msg);
 	}, 'display quick help\n' ],		
 	
 	[ 'ping', message => pingServer(message, false, true), 
@@ -373,7 +381,7 @@ var cmds = [
 		'gets serverinfo of any known server or any ip:port\n', 
 		"`\\info sm` - serverinfo of sodmod ctf `\\info 139.5.28.161:27961` - serverinfo of specified ip:port\n`\\servers` - display known servers"],
 	
-	[ 'servers', 	message => message.channel.send("Known servers:\n" + getKnownServers()), ''],
+	[ 'servers', 	message => bot.privateResponse(message, "Known servers:\n" + getKnownServers()), ''],
 	
 	[ 'map', 		message => switchMap(message), 'switch map on the specified server\n', 
 		'`\\map q3wcp16` - set map on ctf server\n' +
@@ -401,7 +409,7 @@ var cmds = [
 	[ 'plasma', 	message => shot(message, "%t was melted by %a's plasmagun", 	'%a melted itself'), 						'' ],
 	[ 'bfg', 		message => shot(message, "%t was blasted by %a's BFG", 			'%a should have used a smaller gun'), 		'' ],
 	
-	[ 'stuff', 		message => message.channel.send(
+	[ 'stuff', 		message => bot.privateResponse(message, 
 		'**\\servers** - display known servers\n' +
 		'**\\mgdraw** - use machinegun to draw random stuff on wall\n' +
 		'**\\raildraw** - use railgun to draw random stuff on wall\n' +
@@ -423,7 +431,7 @@ var pushQ3commands = () => {
 				var defaultVal  = data.q3commands[i][1];
 				var recommended = data.q3commands[i][2] ? `recommended: ${data.q3commands[i][2]}` : "";
 				
-				message.channel.send(data.q3commands[i][3] + "\n`" + `default: ${defaultVal} ${recommended}` + "`");
+				bot.privateResponse(message, data.q3commands[i][3] + "\n`" + `default: ${defaultVal} ${recommended}` + "`");
 			}
 		]);
 	}
@@ -451,16 +459,13 @@ bot.on('messageReactionAdd', (reaction, user) => {
 });
 
 bot.on('message', message => {	
-	//bot.log(message.content);
-	
 	if (message.content.substring(0, 1) == config.prefix) {						
 		var args = message.content.substring(1).split(' ');
 		var cmd = args[0];
 		
 		var a = message.author.username + '#' + message.author.discriminator;
+		
 		bot.log(`${a} ${message.content}`);
-	   
-		//args = args.splice(1);
 		
 		for(var i = 0; i < cmds.length; i++)
 			if (cmd == cmds[i][ID_CMD])
@@ -493,8 +498,8 @@ bot.on("guildMemberAdd", member => {
 bot.on('ready', evt => {	
 	bot.user.setUsername(config.username);
 	bot.user.setActivity(config.activity);
-    bot.log('Connected as: ' + bot.user.tag);    
-	//bot.log(`Ready to serve on ${bot.guilds.size} servers, for ${bot.users.size} users.`);
+	
+	bot.log(`Connected as: ${bot.user.tag} Serevers: ${bot.guilds.size} Users: ${bot.users.size}`);
 });
 
 bot.on('error', error => {
