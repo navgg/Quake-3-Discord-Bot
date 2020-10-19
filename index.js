@@ -472,19 +472,19 @@ bot.on('message', message => {
 bot.on("guildMemberAdd", member => {
 	bot.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
 
-	var channel = member.guild.channels.find("id", config.MAIN_CHANNEL_ID);  
+	var channel = member.guild.channels.find(x => x.id == config.MAIN_CHANNEL_ID);
 
 	if (channel) {	  
-		var infochannel = member.guild.channels.find("id", config.INFO_CHANNEL_ID);
+		var infochannel = member.guild.channels.find(x => x.id == config.INFO_CHANNEL_ID);
 
-		var emoji1 = bot.emojis.find("name", "q3excellent");
-		var emoji2 = bot.emojis.find("name", "q3wbfg");
+		var emoji1 = bot.emojis.find(x => x.name == "q3excellent");
+		var emoji2 = bot.emojis.find(x => x.name == "q3wbfg");
 
 		var msg = `Welcome, ${member.user}! ${emoji1 || ""} Check ${infochannel} for quick help, have fun ${emoji2 || ""}`;
 		channel.send(msg);
 	}
 	
-	var role = member.guild.roles.find("name", "🎮Quakers");
+	var role = member.guild.roles.find(x => x.name == "🎮Quakers");
 	
 	if (role) {
 		member.addRole(role).catch(console.error);
