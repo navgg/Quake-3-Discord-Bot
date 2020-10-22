@@ -30,6 +30,7 @@ bot.privateResponse = (message, txt) => {
 	}
 	message.author.send(txt);
 };
+
 var getArgs = message => message.content.split(' ');
 
 var getRandomWords = () => {
@@ -286,25 +287,24 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 
 	requestify.get(APIurl + 'getstatus' + paramStr)
 		.then(response => {	
-			var resp = response.getBody();
-			var players = undefined;
-			var serverInfo = undefined;
-			
-			//bot.log(resp);
-			
-			eval(resp);
-			
-			// bot.log(serverInfo);
-			// bot.log(players);				
+			var r = JSON.parse(response.body);
+			var players = r.players;
+			var serverInfo = r.serverInfo;
 			
 			var msg = "";
+			
+			var botsCnt = players.count(p => p.Ping == 0);
+			var playersCnt = players.length - botsCnt;
+			var maxClients = serverInfo.sv_maxclients;
+			var clientsString = botsCnt > 0 ? 
+				`${playersCnt}(${botsCnt})/${maxClients}` : `${playersCnt}/${maxClients}`;
 			
 			if (serverInfo == undefined || serverInfo.sv_hostname == null) {
 				msg += "Server is not responding or ip adress is wrong";
 			} else {								
 				msg += "`" + serverInfo.sv_hostname.replace(/\^[^\^]/g, "").trim() + "` " + "`(Q3 " + getGameVersion(serverInfo.protocol) + ")` " 
 					 + "`" + ip + ":" + port + "`"  + "\n";
-				msg += "`Map: " + serverInfo.mapname + "` `" + serverInfo.sm_ClientsString + "`\n";					
+				msg += "`Map: " + serverInfo.mapname + "` `" + clientsString + "`\n";					
 			
 				if (showPlayers) {											
 					msg += "```";
@@ -326,8 +326,7 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 					msg += "```";
 					
 					for (var prop in serverInfo)
-						if (!prop.startsWith('sm_'))					
-							msg += `${prop}: ${serverInfo[prop]}\n`;					
+						msg += `${prop}: ${serverInfo[prop]}\n`;
 					
 					msg += "```";
 				}
@@ -336,7 +335,7 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 			if (editMessage) {
 				message.edit(msg);
 			} else {
-				if (showPlayers)
+				if (showPlayers && message.guild !== null)
 					message.channel.send(msg).then(async function (message) {					
 						await message.react("🔄");					
 					}).catch(function() {
@@ -504,7 +503,8 @@ bot.on('ready', evt => {
 
 bot.on('error', error => {
 	if (error) {
-		bot.log(error);
+		bot.log(error.message);
+		bot.log(error.error);
 	}
 	// if (error && error.message === 'uWs client connection error') {
 		// bot.log('Reconnecting....');
