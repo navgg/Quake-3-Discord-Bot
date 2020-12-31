@@ -487,10 +487,12 @@ bot.on("guildMemberAdd", member => {
 		channel.send(msg);
 	}
 	
-	var role = member.guild.roles.find(x => x.name == "🎮Quakers");
-	
-	if (role) {
-		member.addRole(role).catch(console.error);
+	if (config.autoRole) {
+		var role = member.guild.roles.find(x => x.name == config.autoRole);
+		
+		if (role) {
+			member.addRole(role).catch(console.error);
+		}
 	}
 });
 
