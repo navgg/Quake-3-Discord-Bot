@@ -25,7 +25,7 @@ bot.log = e => { process.stdout.write(`${new Date().toLocaleString()} `); consol
 //remove message from public channel and respond in private
 bot.privateResponse = (message, txt) => {
 	if (message.guild !== null) {
-		message.author.send(`> ${message.content}`);
+		txt = `> ${message.content}\n` + txt;
 		message.delete(1000);
 	}
 	message.author.send(txt);
@@ -349,6 +349,37 @@ var pingServer = (message, showInfo, showPlayers, editMessage) => {
 			message.channel.send('Request failed. Call admin.');
 		});
 }
+// removes messages before two weeks
+var prune = message => {
+	if (message.guild === null)
+		return;
+	
+	if (!message.member.roles.find(x => x.name == 'Admin')) {
+		bot.log('Access denied \\prune');
+		return;
+	}
+	
+	var args = getArgs(message);
+	
+	if (args && args.length > 1) {
+		message.delete(1000).then(() => {	
+			var amount = args[1];
+		
+			message.channel.fetchMessages({ limit: amount })
+			  .then(fetchedMessages => {
+				  const messagesToPrune = fetchedMessages.filter(msg => !msg.pinned);
+				  return message.channel.bulkDelete(messagesToPrune, true);
+			  })
+			  .then(prunedMessages => {
+				  var msg = `Deleted ${prunedMessages.size} message${prunedMessages.size !== 1 ? 's' : ''}.`;
+				  bot.log(msg);
+			  })
+			  .catch(console.error);
+		});
+	} else {
+		bot.privateResponse(message, getHelp('prune'));
+	}
+}
 
 //all commands: command name, function, quick info, help description
 var cmds = [
@@ -416,7 +447,8 @@ var cmds = [
 		'Examples: `\\rail @Name` `\\lg` `\\rocket @Name (with quad)` `\\bfg @Name (r)`\n' +
 		'write in `( )` any custom ending, r - for random generated'), 'other commands' ],
 		
-	[ 'name',		message => message.channel.send(getRandomWords()),				, 'generate random name' ]
+	[ 'name',		message => message.channel.send(getRandomWords()),				, 'generate random name' ],
+	[ 'prune',		message => prune(message), '', 'Removes specified amount of messages before two weeks' ]
 ]
 
 //push short info for some quake 3 commands
@@ -505,7 +537,6 @@ bot.on('ready', evt => {
 
 bot.on('error', error => {
 	if (error) {
-		bot.log(error.message);
 		bot.log(error.error);
 	}
 	// if (error && error.message === 'uWs client connection error') {
