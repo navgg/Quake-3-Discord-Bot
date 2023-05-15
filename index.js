@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+﻿const Discord = require('discord.js');
 const requestify = require('requestify');
 const fs = require('fs');
 
@@ -88,6 +88,39 @@ var shot = (message, msg1, msg2) => {
 	else if (custom != undefined)
 		msg += " " + (custom == 'r' || firstI == lastI ? getCustomEnding() : custom);	
 	
+	message.channel.send(msg);
+}
+
+var plant = (message, msg1) => {
+	var msg = "";
+	var author = message.author;
+	
+	msg += msg1
+			.replace('%a', author);
+			
+	message.channel.send(msg);
+}
+
+var cast = (message, msg1) => {
+	var msg = "";
+	var author = message.author;
+	
+	var ments = "";
+	var firstMent = true;
+	
+	message.mentions.users.forEach(u => {			
+		if (firstMent) {
+			firstMent = false;
+			ments += u;		
+		} else {
+			ments += " " + u;		
+		}
+	});	
+	
+	msg += msg1
+			.replace('%t', ments)
+			.replace('%a', author);
+			
 	message.channel.send(msg);
 }
 
@@ -439,6 +472,11 @@ var cmds = [
 	[ 'plasma', 	message => shot(message, "%t was melted by %a's plasmagun", 	'%a melted itself'), 						'' ],
 	[ 'bfg', 		message => shot(message, "%t was blasted by %a's BFG", 			'%a should have used a smaller gun'), 		'' ],
 	
+	[ 'plant',		message => plant(message, "%a planted a tree")],
+	[ 'revive',		message => cast(message, "%a bringed back %t to life")],
+	[ 'purify',		message => cast(message, "%a cleaned %t soul from negative effects")],
+	[ 'cookie',		message => cast(message, "%a gave %t a cookie")],
+	
 	[ 'stuff', 		message => bot.privateResponse(message, 
 		'**\\servers** - display known servers\n' +
 		'**\\mgdraw** - use machinegun to draw random stuff on wall\n' +
@@ -512,10 +550,10 @@ bot.on("guildMemberAdd", member => {
 	if (channel) {	  
 		var infochannel = member.guild.channels.find(x => x.id == config.INFO_CHANNEL_ID);
 
-		var emoji1 = bot.emojis.find(x => x.name == "q3excellent");
-		var emoji2 = bot.emojis.find(x => x.name == "q3wbfg");
+		var emoji1 = ""; //bot.emojis.find(x => x.name == "q3excellent");
+		var emoji2 = ""; //bot.emojis.find(x => x.name == "q3wbfg");
 
-		var msg = `Welcome, ${member.user}! ${emoji1 || ""} Check ${infochannel} for quick help, have fun ${emoji2 || ""}`;
+		var msg = `Welcome, ${member.user}! ${emoji1 || ""} Check ${infochannel} for quick help ${emoji2 || ""}`;
 		channel.send(msg);
 	}
 	

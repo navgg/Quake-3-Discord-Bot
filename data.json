@@ -1,5 +1,21 @@
 {
 	"rwords1": [
+		"universal",
+		"kind",
+		"helpful",
+		"generous",
+		"gorgeous",		
+		"magnificent",
+		"luxuriant",
+		"resplendent",
+		"glorious",
+		"splendid",
+		"goodly",
+		"luxurious",
+		"handsome",
+		"glad",
+		"lucky",
+
 		"wild",
 		"savage",
 		"brutal",	
@@ -20,6 +36,7 @@
 		"celestial",
 		"divine",
 		"immortal",
+		"mortal",
 		"unknown",
 		"holy",	
 		"unholy",
@@ -36,6 +53,9 @@
 		"normal",
 		"stupid",
 		"wise",	
+		"natural",
+		"rational",
+		"irrational",
 		
 		"dark",
 		"light",
@@ -79,6 +99,8 @@
 		"fat",
 		"thin",	
 		"funny",
+		"interesting",
+		"supportive",
 		"boring",
 		"top",
 		"worst",
@@ -96,6 +118,7 @@
 		"spicy",
 		"nasty",
 		"delicious",
+		"tasteful",
 		"tasteless",
 		
 		"hot",
@@ -109,10 +132,39 @@
 		"tiny",
 		
 		"pro",
-		"noob"
+		"noob",
+		
+		"red",
+		"green",
+		"yellow",
+		"pink",
+		"white",
+		"blue",
+		"black"
 	], 
 
 	"rwords2": [	
+		"person",
+		"human",
+		"man",
+		"woman",	
+		"mind",
+		"organism",
+		"friend",
+		"queen",
+		"king",
+		"god",
+		"angel",
+		"guardian",
+		"rescuer",
+		"ranger",
+		"saver",
+		"builder",
+		"engenier",
+		"artist",
+		"writer",
+		"worker",
+	
 		"butt",	
 		"booty",
 		"face",
@@ -131,10 +183,8 @@
 		"stick",
 		"fart",
 		
-		"man",
-		"woman",	
-		
 		"flower",
+		"plant",
 		"tree",	
 		"apple",
 		"mango",
@@ -148,7 +198,7 @@
 		"planet",
 		"sun",
 		"star",		
-		
+	
 		"alien",
 		"animal",
 		"fish",
