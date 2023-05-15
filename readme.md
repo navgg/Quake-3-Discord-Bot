@@ -7,4 +7,4 @@ https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-
 4. To run:
 `node .`
 
-P.S. ping and info won't work because access to API have only me :trollface:
+if you need access or info about API, text me in Discord https://discord.gg/ZVt7vBy
